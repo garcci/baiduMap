@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <style type="text/css">
+    body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+  </style>
+  <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=C4QktRtPvdiAix2X3QYVKb4mGB9prgUr"></script>
+  <title>地图展示</title>
+</head>
+<body>
+<div id="allmap"></div>
+</body>
+</html>
+<script type="text/javascript">
+  var geolocation = new BMap.Geolocation();
+  geolocation.getCurrentPosition(function (result) {
+    if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+      if (result.point) {
+        console.info(result)
+        result.point["coordType"] = 3;
+        alert('您的位置：' + result.point.lng + ',' + result.point.lat );
+        var options = result.point;
+        // 创建地理编码实例, 并配置参数获取乡镇级数据
+        var myGeo = new BMap.Geocoder({extensions_town: true});
+        // 根据坐标得到地址描述
+        myGeo.getLocation(new BMap.Point(options.lng, options.lat), function (result) {
+          if (result && result.addressComponents) {
+            var street = result.addressComponents.street || '';
+            var streetNumber = result.addressComponents.streetNumber || '';
+            var title = (street + streetNumber) || result.addressComponents.district;
+            var data = {
+              coordType: 3,
+              title: title,
+              point: result.point,
+              address: result.address,
+              addressComponent: result.addressComponents,
+              pois: result.surroundingPois
+            };
+            alert(result);
+          } else {
+            alert("坐标转换失败：");
+          }
+        });
+      }
+    } else {
+      alert("浏览器定位失败：");
+    }
+  });
+
+</script>
